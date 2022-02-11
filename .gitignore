@@ -2,6 +2,4 @@
 __pycache__/*
 .pytest_cache/*
 *.log
-*.md
-./tmp/pic/*.jpeg
-./tmp/log/*.log
+*.jpeg
