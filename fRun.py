@@ -1,14 +1,14 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File        :frun.py
+@File        :fRun.py
 @Desc        :mian
 @Date        :2022-02-11 12:28
 @Author      :LPigH
 """
 
 from fastapi import FastAPI
-from fast_ap import set_app
+from fastApp import set_app
 
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
