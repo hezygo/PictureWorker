@@ -14,7 +14,7 @@ from pydantic import BaseModel, Field
 
 from getWeChatPic import InitRequest, InitLogger
 from fastapi import APIRouter, Query
-from fexception import exception_init
+from fException import exception_init
 
 
 class BaseResponse(BaseModel):
