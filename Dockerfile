@@ -6,5 +6,5 @@ RUN python -m pip install -r requirements.txt
 WORKDIR /fast_app
 COPY . .
 EXPOSE 80
-CMD ["uvicorn", "frun:fast_app", "--host", "0.0.0.0", "--port", "80"]
+CMD ["uvicorn", "fRun:fast_app", "--host", "0.0.0.0", "--port", "80"]
 #  -v ./tmp/pic:/fast_app/tmp/pic
