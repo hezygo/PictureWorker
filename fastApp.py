@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File        :fast_ap.py
+@File        :fastApp.py
 @Desc        :api
 @Date        :2022-02-11 12:27
 @Author      :LPigH
