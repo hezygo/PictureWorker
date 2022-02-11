@@ -1,0 +1,7 @@
+# 忽略文件
+__pycache__/*
+.pytest_cache/*
+*.log
+*.md
+./tmp/pic/*.jpeg
+./tmp/log/*.log
