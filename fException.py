@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- encoding: utf-8 -*-
 """
-@File        :fexception.py
+@File        :fException.py
 @Desc        :http execption handle
 @Date        :2022-02-11 12:27
 @Author      :LPigH
