@@ -2,7 +2,8 @@ version: '3.4'
 
 services:
   wcpic:
-    image: wcpic
+    image: picture_worker
+    container_name: picture_worker
     build:
       context: .
       dockerfile: ./Dockerfile
