@@ -21,9 +21,9 @@ from random import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
 
 TMP = "./tmp"
-PICEXG = ".jpeg"
 LOGDIR = 'log'
 PICDIR = 'pic'
+PIC_EXTENSION = {'image/jpg':'jpg', 'image/jpeg':'jpeg', 'image/gif':'gif', 'image/png':'png'}
 
 
 def InitLogger():
@@ -41,6 +41,7 @@ class InitRequest:
 
     def __init__(self) -> None:
         self.logger = logger
+        self.find_all = []
 
     def _respone(self, url, beText=True, slp=1):
         sleep(slp)
@@ -50,24 +51,31 @@ class InitRequest:
         return resp, url
 
     def get_pic(self, text: str = None):
+
         if text:
             soup = BeautifulSoup(text, 'lxml')
         else:
             self.logger.warning(traceback.format_exc())
             raise UnexpectedException(
                 "数据不存在", ValueError, traceback.format_exc())
-        res = soup.find_all(attrs={"data-type": "jpeg"})
-        for pic_item in res:
+        for _,typ in PIC_EXTENSION.items():
+            
+            res = soup.find_all(attrs={
+                "data-type": typ
+            })
+            if res:
+                self.find_all.extend(res)
+        for pic_item in self.find_all:
             if 'data-src' in pic_item.attrs:
                 yield pic_item.attrs['data-src']
 
-    def md5_(self,text):
+    def md5_(self, text: bytes, pic_ext: str):
         name_ = md5(text)
         name = name_.hexdigest()
-        return '{}/{}/{}/{}{}'.format(TMP, PICDIR, self._set_pdir_evday, name, PICEXG), name
+        return '{}/{}/{}/{}{}'.format(TMP, PICDIR, self._set_pdir_evday, name, pic_ext), name
 
-    def _save(self, content):
-        path, name = self.md5_(content)
+    def _save(self, content: bytes, pic_ext):
+        path, name = self.md5_(content, pic_ext)
         if not os.path.exists(path):
             with open(path, "wb") as fw:
                 fw.write(content)
@@ -88,8 +96,12 @@ class InitRequest:
                     except Exception as err:
                         self.logger.warning(err)
                     else:
-                        file_pname = self._save(result.content)
-                        rep[file_pname] = url
+                        ct_type =PIC_EXTENSION.get(result.headers['Content-Type'],None) 
+                        if ct_type :
+                            file_pname = self._save(result.content, f'.{ct_type}')
+                            rep[file_pname] = url
+                        else:
+                            self.logger.warning(f"Unkown Content-Type:{result.headers['Content-Type']}")
                         del futures[future]
         return rep
 
@@ -103,4 +115,6 @@ class InitRequest:
 
 if __name__ == "__main__":
     ir = InitRequest()
+    # text, _ = ir._respone('https://mp.weixin.qq.com/s/B7o4OmJNZRuXsScX7wCl-A')
+    # result = ir._process_down(ir.get_pic(text))
     # ir._process_down(ir.get_pic())
