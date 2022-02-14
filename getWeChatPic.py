@@ -61,11 +61,10 @@ class InitRequest:
             if 'data-src' in pic_item.attrs:
                 yield pic_item.attrs['data-src']
 
-    @staticmethod
-    def md5_(text):
+    def md5_(self,text):
         name_ = md5(text)
         name = name_.hexdigest()
-        return '{}/{}/{}{}'.format(TMP, PICDIR, name, PICEXG), name
+        return '{}/{}/{}/{}{}'.format(TMP, PICDIR, self._set_pdir_evday, name, PICEXG), name
 
     def _save(self, content):
         path, name = self.md5_(content)
@@ -94,6 +93,13 @@ class InitRequest:
                         del futures[future]
         return rep
 
+    @property
+    def _set_pdir_evday(self):
+        today = date.isoformat(datetime.now())
+        f_dir = f'{os.path.join(TMP, PICDIR)}/{today}'
+        if not os.path.exists(f_dir):
+            os.mkdir(f_dir)
+        return today
 
 if __name__ == "__main__":
     ir = InitRequest()

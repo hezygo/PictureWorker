@@ -1,5 +1,7 @@
 # 忽略文件
 __pycache__/*
 .pytest_cache/*
-./tmp/pic/*.jpeg
-./tmp/log/*.log
+tmp/pic/*
+!*.c
+*.jpeg
+*.log
