@@ -8,12 +8,10 @@
 """
 
 
-from doctest import UnexpectedException
+
 from hashlib import md5
 from fastapi import FastAPI, APIRouter
-from py import code
 from pydantic import BaseModel, Field
-
 from getWeChatPic import InitRequest, InitLogger
 from fastapi import APIRouter, Query
 from fException import exception_init
@@ -51,7 +49,7 @@ async def get_picture(
 ):
     ir = InitRequest()
     if WcPageUrl:
-        text, _ = ir._respone(WcPageUrl)
+        text, _ = ir._response(WcPageUrl)
     else:
         text = None
     result = dict()
@@ -74,11 +72,11 @@ async def updateMyBlogsMd(
 ):
     ir = InitRequest()
     if WcPageUrl:
-        text, _ = ir._respone(WcPageUrl)
+        text=  ir._web_response(WcPageUrl)
     else:
         return MdResponse(msg="更新失败", code=10422)
     MD_IMG ='''![{image_name}]({url})\n'''
-    gp = ir.get_pic(text)
+    gp = ir.get_pic(text,'src') #使用src源
     result = [ MD_IMG.format(image_name=util_md5(item), url=item) for item in gp]
     util_write_md(MdName,result,ir.get_title(text))
     return MdResponse(msg="成功",data={"title": ir.pages_title, "path": MdName })

@@ -11,3 +11,4 @@ services:
       - 9000:80
     volumes: 
       - ./tmp:/fast_app/tmp
+      - /home/cm001/phantomjs-2.1.1-linux-x86_64/bin/phantomjs:/fast_app/phantomjs

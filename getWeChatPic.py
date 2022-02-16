@@ -20,7 +20,9 @@ import re
 from loguru import logger
 from random import random
 from concurrent.futures import ThreadPoolExecutor, as_completed
-
+from selenium import webdriver
+from requests_html import AsyncHTMLSession
+from config import settings
 TMP = "./tmp"
 LOGDIR = 'log'
 PICDIR = 'pic'
@@ -51,12 +53,43 @@ class InitRequest:
         self.find_all = []
         self.pages_title = ''
 
-    def _respone(self, url, beText=True, slp=1):
+    def _response(self, url, beText=True, slp=1):
         sleep(slp)
         resp = requests.get(url)
         if beText:
             return resp.text, url
         return resp, url
+
+    def _web_response(self, url):
+        """
+        使用浏览器驱动
+        return: 只返回html
+        """
+        self.logger.info(settings.jsdriver)
+        browser = webdriver.PhantomJS(settings.jsdriver) #js驱动路径
+        browser.get(url)
+        sleep(3)
+        for _ in range(20):
+            
+            js = '''var a = document.createElement('div');
+                    document.body.appendChild(a);
+                    a.scrollIntoView({behavior: "smooth"})'''
+            # 执行js代码 滚动条
+            browser.execute_script(js)
+            sleep(0.1)
+            js2 = '''document.body.scrollIntoView({behavior: "smooth"})
+            '''
+            browser.execute_script(js2)
+            sleep(0.1)
+        return browser.page_source
+
+
+    async def _request_html_response(self, url):
+        # 异步加载html
+        asession = AsyncHTMLSession()
+        r =  await asession.get(url)
+        await r.html.arender(scrolldown=8, sleep=0.5)
+        return r.text
 
     @staticmethod
     def _check_build(text: str):
@@ -94,18 +127,18 @@ class InitRequest:
         p_author = self.strip_all(p_author.text)if p_author else "littlepig"
         return MD_HEAD.format(title=self.pages_title, date=p_date, author=p_author)
 
-    def get_pic(self, text: str = None):
+    def get_pic(self, text: str = None, default_data_fmt='data-src'):
         soup = self._check_build(text)
         for _, typ in PIC_EXTENSION.items():
 
-            res = soup.find_all(attrs={
+            res = soup.find_all('img',attrs={
                 "data-type": typ
             })
             if res:
                 self.find_all.extend(res)
         for pic_item in self.find_all:
-            if 'data-src' in pic_item.attrs:
-                yield pic_item.attrs['data-src']
+            if default_data_fmt in pic_item.attrs:
+                yield pic_item.attrs[default_data_fmt]
 
     def md5_(self, text: bytes, pic_ext: str):
         name_ = md5(text)
@@ -125,7 +158,7 @@ class InitRequest:
 
         with ThreadPoolExecutor(max_workers=workers) as pool:
             futures = {
-                pool.submit(self._respone, src, False, random()): src for src in gp
+                pool.submit(self._response, src, False, random()): src for src in gp
             }
             while futures:
                 for future in as_completed(futures):
@@ -155,9 +188,9 @@ class InitRequest:
         return today
 
 
-if __name__ == "__main__":
-    ir = InitRequest()
-    text, _ = ir._respone('https://mp.weixin.qq.com/s/B7o4OmJNZRuXsScX7wCl-A')
-    print(ir.get_title(text))
+# if __name__ == "__main__":
+    # ir = InitRequest()
+    # text, _ = ir._response('https://mp.weixin.qq.com/s/B7o4OmJNZRuXsScX7wCl-A')
+    # print(ir.get_title(text))
     # result = ir._process_down(ir.get_pic(text))
     # ir._process_down(ir.get_pic())

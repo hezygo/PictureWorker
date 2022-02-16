@@ -3,5 +3,6 @@ fastapi==0.73.0
 loguru==0.5.3
 pydantic==1.8.2
 requests==2.25.1
+requests_html==0.10.0
+selenium==2.48.0
 uvicorn==0.14.0
-lxml==4.6.3

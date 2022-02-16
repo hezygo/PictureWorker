@@ -2,7 +2,7 @@ FROM python:3.7.10-slim-buster
 
 COPY requirements.txt requirements.txt
 RUN python -m pip install -r requirements.txt
-
+ENV JSDRIVER='/fast_app/phantomjs'
 WORKDIR /fast_app
 COPY . .
 EXPOSE 80

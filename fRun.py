@@ -12,8 +12,8 @@ from fastApp import set_app
 
 import uvicorn
 from fastapi.middleware.cors import CORSMiddleware
-
-fast_app = FastAPI(title='LiP', version='1.0')
+from config import settings
+fast_app = FastAPI(title=settings.title,version=settings.version)
 set_app(fast_app)
 
 origins = ["*"]
@@ -28,4 +28,4 @@ fast_app.add_middleware(
 
 
 if __name__ == "__main__":
-    uvicorn.run(fast_app, host='0.0.0.0', port=9001)
+    uvicorn.run(fast_app, host=settings.server_host, port=9001)
