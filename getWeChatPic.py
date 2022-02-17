@@ -34,6 +34,9 @@ author: {author}
 date: '{date}'
 ---\n'''
 
+EXE_JS = '''
+var speed=600;var sleep=function(time){return new Promise(function(resolve,reject){setTimeout(function(){resolve(true)},time)})};var getImgArr=function(){return document.querySelectorAll('img.rich_pages')};var flush=function(){let imgArr=getImgArr();imgArr.forEach(async function(img,index){await sleep(speed*index);img.scrollIntoView()})};var checkRealSrc=function(){let imgArr=getImgArr();let bool=true;imgArr.forEach(function(x){if(x.getAttribute('src').slice(0,4)!='http'){bool=false}});return bool};var waitAllLoading=async function(){let imgArr=getImgArr();flush();await sleep(speed*imgArr.length);if(!checkRealSrc()){waitAllLoading()}else{window.jojoImgAllLoading='Done'}};waitAllLoading();'''
+
 
 def InitLogger():
     f_locate = f'{os.path.join(TMP, LOGDIR)}/{date.isoformat(datetime.now())}.log'
@@ -60,34 +63,54 @@ class InitRequest:
             return resp.text, url
         return resp, url
 
-    def _web_response(self, url):
+    async def _web_response(self, url):
         """
         使用浏览器驱动
         return: 只返回html
         """
-        self.logger.info(settings.jsdriver)
-        browser = webdriver.PhantomJS(settings.jsdriver) #js驱动路径
+        self.logger.info(settings.js_driver)
+        browser = webdriver.PhantomJS(settings.js_driver)  # js驱动路径
         browser.get(url)
         sleep(3)
-        for _ in range(20):
-            
-            js = '''var a = document.createElement('div');
-                    document.body.appendChild(a);
-                    a.scrollIntoView({behavior: "smooth"})'''
-            # 执行js代码 滚动条
-            browser.execute_script(js)
-            sleep(0.1)
-            js2 = '''document.body.scrollIntoView({behavior: "smooth"})
-            '''
-            browser.execute_script(js2)
-            sleep(0.1)
+        def get_now():
+            return datetime.timestamp(datetime.now())
+        t_start =get_now()
+        with open('/home/cm001/PictureWorker/picture.js','r',encoding='utf-8') as fr:
+            js_str  = fr.read()
+            browser.execute_script(js_str)
+        while 'Not Done' :
+            jojo = browser.execute_script('return window.jojoImgAllLoading')
+            if jojo:
+                break
+        t_end = get_now() - t_start
+        self.logger.info(f"use time sec {t_end}")
         return browser.page_source
 
+    def _chorme_response(self, url):
+        from selenium import webdriver
+        from selenium.webdriver.chrome.options import Options
+        from selenium.webdriver.support.wait import WebDriverWait
+        chrome_options = Options()
+        chrome_options.add_argument('--headless')
+        chrome_options.add_argument('--disable-gpu')
+
+        driver = webdriver.Chrome(
+            chrome_options=chrome_options, executable_path=settings.chorme_driver)
+        driver.get(url)
+        with open('/home/cm001/PictureWorker/picture.js','r',encoding='utf-8') as fr:
+            js_str  = fr.read()
+            jojo = driver.execute_script(js_str)
+            print(jojo)
+        
+        WebDriverWait(driver, 5)
+        html = driver.page_source
+        driver.quit()
+        return html
 
     async def _request_html_response(self, url):
         # 异步加载html
         asession = AsyncHTMLSession()
-        r =  await asession.get(url)
+        r = await asession.get(url)
         await r.html.arender(scrolldown=8, sleep=0.5)
         return r.text
 
@@ -131,7 +154,7 @@ class InitRequest:
         soup = self._check_build(text)
         for _, typ in PIC_EXTENSION.items():
 
-            res = soup.find_all('img',attrs={
+            res = soup.find_all('img', attrs={
                 "data-type": typ
             })
             if res:

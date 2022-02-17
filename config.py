@@ -10,7 +10,8 @@ class APISettings(BaseSettings):
     version: str = "0.0.1"
     debug: bool = False
     openapi_url: Optional[str] = "/openapi.json"
-    jsdriver :str =""
+    js_driver :str =""
+    chorme_driver:str =""
     class Config:
         env_file = ".env"
         env_file_encoding = 'utf-8'

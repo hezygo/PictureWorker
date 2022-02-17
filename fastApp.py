@@ -72,7 +72,7 @@ async def updateMyBlogsMd(
 ):
     ir = InitRequest()
     if WcPageUrl:
-        text=  ir._web_response(WcPageUrl)
+        text= await  ir._web_response(WcPageUrl)
     else:
         return MdResponse(msg="更新失败", code=10422)
     MD_IMG ='''![{image_name}]({url})\n'''

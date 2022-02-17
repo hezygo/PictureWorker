@@ -1,0 +1,18 @@
+
+# chome
+RUN apt-get install software-properties-common -y
+RUN add-apt-repository "deb http://archive.ubuntu.com/ubuntu $(lsb_release -sc) main universe restricted multiverse"
+RUN apt-get update -y
+RUN apt-get install -y libglib2.0-0=2.50.3-2 \
+    libnss3=2:3.26.2-1.1+deb9u1  \
+    libgconf-2-4=3.2.6-4+b1 \
+    libfontconfig1=2.11.0-6.7+b1
+RUN apt-get install python-selenium python3-selenium -y
+RUN wget http://security.ubuntu.com/ubuntu/pool/universe/c/chromium-browser/chromium-browser_73.0.3683.103-0ubuntu1_amd64.deb
+# 如果支持76+版本的chrome，可以直接使用以下命令安装stable版本
+# RUN wget https://dl.google.com/linux/direct/google-chrome-stable_current_amd64.deb
+RUN dpkg -i google-chrome-stable_current_amd64.deb --fix-missing; apt-get -fy install
+ 
+# chrome_driver, 注意版本对应
+RUN cd /bin && wget https://chromedriver.storage.googleapis.com/76.0.3809.126/chromedriver_linux64.zip && unzip chromedriver_linux64.zip
+RUN chmod +x /bin/chromedriver
