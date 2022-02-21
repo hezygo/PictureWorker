@@ -28,6 +28,7 @@ class PicResponse(BaseResponse):
 class MdBaseResponse(BaseModel):
     title: str = Field(..., description='标题')
     path: str = Field(..., description='路径')
+    img_length: int = Field(0,description="图片数量")
 
 class MdResponse(BaseResponse):
     data: MdBaseResponse = Field({}, description='文档数据')
@@ -79,7 +80,7 @@ async def updateMyBlogsMd(
     gp = ir.get_pic(text,'src') #使用src源
     result = [ MD_IMG.format(image_name=util_md5(item), url=item) for item in gp]
     util_write_md(MdName,result,ir.get_title(text))
-    return MdResponse(msg="成功",data={"title": ir.pages_title, "path": MdName })
+    return MdResponse(msg="成功",data={"title": ir.pages_title, "path": MdName ,"img_length": len(result)})
 
 
 def util_md5(text):
@@ -88,7 +89,7 @@ def util_md5(text):
 
 
 def util_write_md(name: str, text: list, head: str):
-    with open(f'{name}.md', 'w') as wf:
+    with open(f'./tmp/md/{name}.md', 'w') as wf:
         wf.write(head)
         wf.writelines(text)
 

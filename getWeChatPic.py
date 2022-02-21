@@ -75,7 +75,7 @@ class InitRequest:
         def get_now():
             return datetime.timestamp(datetime.now())
         t_start =get_now()
-        with open('/home/cm001/PictureWorker/picture.js','r',encoding='utf-8') as fr:
+        with open('./picture.js','r',encoding='utf-8') as fr:
             js_str  = fr.read()
             browser.execute_script(js_str)
         while 'Not Done' :

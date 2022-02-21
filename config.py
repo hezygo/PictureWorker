@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseSettings
-
+from functools import lru_cache
 
 class APISettings(BaseSettings):
     server_host: str = "127.0.0.1"
@@ -17,3 +17,9 @@ class APISettings(BaseSettings):
         env_file_encoding = 'utf-8'
 
 settings = APISettings()
+
+@lru_cache(100)
+def getFastSetting():
+    """
+    TODO Next"""
+    return APISettings()
