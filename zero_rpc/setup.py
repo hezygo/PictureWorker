@@ -1,9 +1,9 @@
-from setuptools import find_packages, setup
+from setuptools import setup
 
 setup(
     name='zrpc',
     version='0.0.1',
-    packages=find_packages(),
+    packages=['zrpc'],
     include_package_data=True,
     zip_safe=False,
     install_requires=[
