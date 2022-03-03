@@ -12,7 +12,7 @@ from datetime import datetime
 import zmq
 from zmq.auth.thread import ThreadAuthenticator
 
-from constant import KEEP_ALIVE_INTERVAL,KEEP_ALIVE_TOPIC
+from .constant import KEEP_ALIVE_INTERVAL,KEEP_ALIVE_TOPIC
 
 class RpcServer:
     def __init__(self):

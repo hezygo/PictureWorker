@@ -10,7 +10,7 @@ from time import sleep
 from threading import Thread
 from queue import Queue,Empty
 
-from constant import EVENT_TIMER
+from .constant import EVENT_TIMER
 
 class Event:
     def __init__(self, etype, data = None):

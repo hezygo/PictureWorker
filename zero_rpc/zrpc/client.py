@@ -12,8 +12,8 @@ import zmq
 from zmq.auth.thread import ThreadAuthenticator
 from zmq.backend.cython.constants import NOBLOCK
 
-from exception import RemoteException
-from constant import KEEP_ALIVE_TOPIC,KEEP_ALIVE_TOLERANCE
+from .exception import RemoteException
+from .constant import KEEP_ALIVE_TOPIC,KEEP_ALIVE_TOLERANCE
 
 class RpcClient:
 
